@@ -1,0 +1,268 @@
+{
+    "description": "bot_Pre-Filter_FS",
+    "states": [
+      {
+        "name": "Trigger",
+        "type": "trigger",
+        "transitions": [
+          {
+            "event": "incomingMessage",
+            "next": "welcome"
+          },
+          {
+            "event": "incomingCall"
+          },
+          {
+            "event": "incomingConversationMessage"
+          },
+          {
+            "event": "incomingRequest"
+          },
+          {
+            "next": "welcome",
+            "event": "incomingParent"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -130,
+            "y": -50
+          }
+        }
+      },
+      {
+        "name": "welcome",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -20,
+            "y": 220
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Hallo herzlich willkommen bei IU Internationale Hochschule! Vielen Dank für Deine Anfrage."
+        }
+      },
+      {
+        "name": "menu",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "split_for_menu_selection",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -30,
+            "y": 500
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "body": "Du möchtest mehr über ein Studium bei uns erfahren? Dann antworte mit _*Beratung*_ Du hast Fragen zum Status deiner Einschreibung? Dann antworte mit _*Einschreibung*_ Du studierst bereits bei uns? Dann antworte mit _*Studium*_.",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "split_for_menu_selection",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "next": "No_Condition_Matches",
+            "event": "noMatch"
+          },
+          {
+            "next": "Beratung",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "Beratung",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "Beratung"
+              }
+            ]
+          },
+          {
+            "next": "Einschreibung",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "Einschreibung",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "Einschreibung"
+              }
+            ]
+          },
+          {
+            "next": "Studium",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "Studium",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "Studium"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.menu.inbound.Body}}",
+          "offset": {
+            "x": -80,
+            "y": 780
+          }
+        }
+      },
+      {
+        "name": "Beratung",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "send_data_to_parent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1210,
+            "y": 1080
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Ok, dann leite ich dich jetzt an unsere Studienberater weiter."
+        }
+      },
+      {
+        "name": "send_data_to_parent",
+        "type": "set-variables",
+        "transitions": [
+          {
+            "event": "next"
+          }
+        ],
+        "properties": {
+          "variables": [
+            {
+              "value": "Y",
+              "key": "isAgentRequested"
+            }
+          ],
+          "offset": {
+            "x": -1210,
+            "y": 1340
+          }
+        }
+      },
+      {
+        "name": "Studium",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -280,
+            "y": 1260
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Bitte wende dich mit deinem Anliegen via Email oder Telefon an unser Studierendensekretariat. Unser Team ist Mo-Fr von 08:00 – 20:00 Uhr und Sa​von 09:00 – 17:00 Uhr erreichbar. Email: studium-fernstudium@iu.org Telefon:+493031198855 Hast du trotzdem weitere Fragen?​"
+        }
+      },
+      {
+        "name": "Einschreibung",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "menu",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -760,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "body": "Leider kommt es aufgrund zahlreicher Anfragen zu einer verlängerten Bearbeitungszeit. Du erhältst bis zu 14 Tage nach Einreichung deiner vollständigen Bewerbung eine Rückmeldung. Wir bitten dich daher um etwas Geduld. Hast du trotzdem weitere Fragen?",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "No_Condition_Matches",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "next": "menu",
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 490,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Entschuldige, das habe ich nicht verstanden. Dir stehen folgende Optionen zur Verfügung:"
+        }
+      }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+      "allow_concurrent_calls": true
+    }
+  }

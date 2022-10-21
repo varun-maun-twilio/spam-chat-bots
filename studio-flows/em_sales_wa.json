@@ -1,0 +1,609 @@
+{
+    "description": "A New Flow",
+    "states": [
+      {
+        "name": "Trigger",
+        "type": "trigger",
+        "transitions": [
+          {
+            "next": "welcome",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "incomingCall"
+          },
+          {
+            "event": "incomingConversationMessage"
+          },
+          {
+            "event": "incomingRequest"
+          },
+          {
+            "next": "welcome",
+            "event": "incomingParent"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -130,
+            "y": -50
+          }
+        }
+      },
+      {
+        "name": "welcome",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -20,
+            "y": 220
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Hi 😊, my name is Iva, the IU International Virtual Assistant. I am a robot and I am still learning how to find the best answers for you. I can help you with the following topics:"
+        }
+      },
+      {
+        "name": "menu",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "split_for_menu_selection",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -30,
+            "y": 500
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "body": "*1.* Free info package about IU International study programmes\\n*2.* Application Documents\\n*3.* Fees/Scholarship\\n*4.* How to study at IU International\\n*5.* IU International accreditation\\n*6.* Can I come to Germany?\\n*7.* When can I start studying?\\n\\n\\nPlease type the *NUMBER* of the topic you are interested in.",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "split_for_menu_selection",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "event": "noMatch"
+          },
+          {
+            "next": "menu_option_1",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "1",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "1"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_2",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "2",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "2"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_3",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "3",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "3"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_4",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "4",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "4"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_5",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "5",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "5"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_6",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "6",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "6"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_7",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "7",
+                "arguments": [
+                  "{{widgets.menu.inbound.Body}}"
+                ],
+                "type": "equal_to",
+                "value": "7"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.menu.inbound.Body}}",
+          "offset": {
+            "x": -80,
+            "y": 780
+          }
+        }
+      },
+      {
+        "name": "menu_option_1",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1470,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Ok, got it. Just follow this link and click on *request free information*:https://www.iu.org"
+        }
+      },
+      {
+        "name": "menu_end_agent",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "split_for_menu__end_agent_selection",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 110,
+            "y": 2850
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "body": "Please type *MENU* to get back to the main menu.\\n\\nType *END* if you would like to end our conversation.\\n\\nType *AGENT* if you want to talk to a studyadvisor.",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "split_for_menu__end_agent_selection",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "event": "noMatch"
+          },
+          {
+            "next": "menu",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "menu",
+                "arguments": [
+                  "{{widgets.menu_end_agent.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "menu,MENU"
+              }
+            ]
+          },
+          {
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "end",
+                "arguments": [
+                  "{{widgets.menu_end_agent.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "end,END"
+              }
+            ]
+          },
+          {
+            "next": "send_data_to_parent",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "agent",
+                "arguments": [
+                  "{{widgets.menu_end_agent.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "agent,AGENT"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.menu_end_agent.inbound.Body}}",
+          "offset": {
+            "x": 1610,
+            "y": 2980
+          }
+        }
+      },
+      {
+        "name": "send_data_to_parent",
+        "type": "set-variables",
+        "transitions": [
+          {
+            "event": "next"
+          }
+        ],
+        "properties": {
+          "variables": [
+            {
+              "value": "Y",
+              "key": "isAgentRequested"
+            }
+          ],
+          "offset": {
+            "x": 1810,
+            "y": 3490
+          }
+        }
+      },
+      {
+        "name": "menu_option_7",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 1300,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "If you start your studies online, you can start whenever you want!\\n\\nOn campus, we have set starting dates for the summer (April) and fall (October) semester.\\n\\nPlease fill out our online application by clicking on *Apply now* on our website and choose your preferred option:\\nhttps://www.iu.org\\n\\nIs there anything else you would like to know?"
+        }
+      },
+      {
+        "name": "menu_option_6",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 940,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "IU University offers  programmes 100% online or on campus in Berlin or Bad Honnef, Germany. To compare our study models, find out more here: https://www.iu.org/my-university/study-models/\\n\\nWe offer many of our programs both online and on campus. We recommend starting your studies online at your own convenience and tranferring to campus later on. \\n\\nIs there anything else you would like to know?"
+        }
+      },
+      {
+        "name": "menu_option_5",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 610,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "IU International is an internationally recognized university. We are proud of the numerous accreditations we have attained over the years, including *five premium FIBAA seals* and our *5-star QS rating*. Please also check out our Accreditations & Rankings page to find out more: \\nhttps://www.iu.org/why-iu/accreditations-and-rankings/\\n\\nIs there anything else you would like to know?"
+        }
+      },
+      {
+        "name": "menu_option_4",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 190,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Step by step, a personal advisor will walk you through the application process.\\n\\nBut first, please fill out our online application by clicking on *Apply now* on our website: https://www.iu.org"
+        }
+      },
+      {
+        "name": "menu_option_3",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -140,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "*We currently have up-to 75% scholarships available for online studies!*\\n\\nFollow this link and click on *Apply now*: https://www.iu.org\\n\\nPlease note: The final fees depend on your chosen study programme, study duration and whether you are eligible for the scholarship or not.\\n\\nIs there anything else you would like to know?"
+        }
+      },
+      {
+        "name": "menu_option_2_MBA",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -470,
+            "y": 1650
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Here is an overview of our MBA programmes: https://www.iu.org/mba/\\n\\n*We need the following documents for your application:*\\n\\n- degree certificate(s)\\n- transcript(s)\\n- proof of at least 1 year of post- graduate work experience\\n-CV\\n- passport or ID"
+        }
+      },
+      {
+        "name": "menu_option_2",
+        "type": "send-and-wait-for-reply",
+        "transitions": [
+          {
+            "next": "menu_option_2_split",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "timeout"
+          },
+          {
+            "event": "deliveryFailure"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -760,
+            "y": 1090
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "body": "Type *BACHELOR*  if you are interested in a bachelor programme\\n\\nType *MASTER*  for our master programmes\\n\\nType *MBA* for our MBA programmes.",
+          "timeout": "3600"
+        }
+      },
+      {
+        "name": "menu_option_2_split",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "event": "noMatch"
+          },
+          {
+            "next": "menu_option_2_Bachelor",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "BACHELOR",
+                "arguments": [
+                  "{{widgets.menu_option_2.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "BACHELOR,bachelor"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_2_MASTER",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "MASTER",
+                "arguments": [
+                  "{{widgets.menu_option_2.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "master,MASTER"
+              }
+            ]
+          },
+          {
+            "next": "menu_option_2_MBA",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "MBA",
+                "arguments": [
+                  "{{widgets.menu_option_2.inbound.Body}}"
+                ],
+                "type": "matches_any_of",
+                "value": "MBA,mba"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.menu_option_2.inbound.Body}}",
+          "offset": {
+            "x": -760,
+            "y": 1350
+          }
+        }
+      },
+      {
+        "name": "menu_option_2_MASTER",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -880,
+            "y": 1650
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "For an overview of all of our Master programmes, please check out this link: https://www.iu.org/master/\\n\\n*We need the following documents for your application:*\\n- degree certificate(s)\\n- transcript(s)\\n- proof of at least 1 year of post- graduate work experience for certain Master programmes\\n-CV\\n- passport or ID"
+        }
+      },
+      {
+        "name": "menu_option_2_Bachelor",
+        "type": "send-message",
+        "transitions": [
+          {
+            "next": "menu_end_agent",
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -1290,
+            "y": 1650
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Ok, got it. For an overview of all of our Bachelor programmes, please check out this link: https://www.iu.org/bachelor/\\n\\n*We need the following documents for your application:*\\n\\n- higher secondary school leaving certificate or tertiary education certificate (e.g. Higher National Diploma)\\n\\n-CV\\n\\n- passport or ID"
+        }
+      }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+      "allow_concurrent_calls": true
+    }
+  }
